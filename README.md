@@ -1,5 +1,3 @@
-
-# TS SCRIPTS - HUD
 ## Features
 
 - Settings Menu
@@ -58,27 +56,11 @@ You have two options for installation:
    pnpm build
    ```
 After, ensure that the resource is correctly referenced in the server.cfg file.
-## Support
 
-[Join our Discord community](https://discord.gg/UBnX997H6A)
-
-
-## Contributing
-
-We welcome and encourage contributions from everyone!
-
-If you have an idea for improvement, want to fix a bug, or add new features, feel free to make the changes and submit a Pull Request (PR). The TS Scripts team will review your PR as soon as possible.
-
-Your contributions help us improve and grow—thank you for your support!
-## Feedback
-
-If you have any feedback, please reach out to me in our [Discord community](https://discord.gg/UBnX997H6A)
-
-
-## Authors
+## HUD Author
 
 - [@Thomasdev18](https://github.com/Thomasdev18)
-
+- [Thomasdev18´s Discord community](https://discord.gg/UBnX997H6A)
 
 ## Credits
 A big thank you to everyone who has contributed, reached out, and offered to help—I truly appreciate your support!
@@ -86,4 +68,3 @@ A big thank you to everyone who has contributed, reached out, and offered to hel
 Special thanks to **MT-Scripts** for providing the foundation of the backend, which is based on their HUD.
 
 - [@MT-Scripts](https://github.com/MT-Scripts)
-
