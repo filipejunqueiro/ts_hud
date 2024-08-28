@@ -7,7 +7,7 @@ return {
     isLowFuelChecked = true,
     stress = {
         enableStress = true,
-        policeStress = false,
+        policeStress = true,
         chance = 0.1, -- Percentage stress chance when shooting (0-1)
         minForShaking = 50, -- Minimum stress level for screen shaking
         minForSpeeding = 1000, -- Minimum stress level for speeding while buckled
@@ -37,6 +37,6 @@ return {
         hudPosition = "left",  -- Default HUD position
     },
     harness = {
-        qbox_seatbelt = false,
+        qbox_seatbelt = true,
     }
 }

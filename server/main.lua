@@ -17,10 +17,10 @@ RegisterNetEvent('hud:server:GainStress', function(amount)
     local newStress
     if not player then return end
     if not resetStress then
-        if not player.PlayerData.metadata.stress then
-            player.PlayerData.metadata.stress = 0
+        if not player.Playerdata?.metadata?.stress then
+            player.Playerdata?.metadata?.stress = 0
         end
-        newStress = player.PlayerData.metadata.stress + amount
+        newStress = player.Playerdata?.metadata?.stress + amount
         if newStress <= 0 then newStress = 0 end
     else
         newStress = 0
@@ -44,10 +44,10 @@ RegisterNetEvent('hud:server:RelieveStress', function(amount)
     local newStress
     if not player then return end
     if not resetStress then
-        if not player.PlayerData.metadata.stress then
-            player.PlayerData.metadata.stress = 0
+        if not player.Playerdata?.metadata?.stress then
+            player.Playerdata?.metadata?.stress = 0
         end
-        newStress = player.PlayerData.metadata.stress - amount
+        newStress = player.Playerdata?.metadata?.stress - amount
         if newStress <= 0 then newStress = 0 end
     else
         newStress = 0

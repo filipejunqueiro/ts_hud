@@ -9,7 +9,7 @@ import { isEnvBrowser } from "./utils/misc";
 if (isEnvBrowser()) {
   const root = document.getElementById("root");
 
-  root!.style.backgroundImage = 'url("https://i.imgur.com/ZiJBeRi.png")';
+  root!.style.backgroundImage = 'url("https://i.imgur.com/3pzRj9n.png")';
   root!.style.backgroundSize = "contain";
   root!.style.backgroundRepeat = "no-repeat";
   root!.style.backgroundPosition = "center";
@@ -17,13 +17,13 @@ if (isEnvBrowser()) {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <MantineProvider theme={{ colorScheme: 'dark' }}>
-       <VisibilityProvider componentName="Player">
+    {/* <MantineProvider theme={{ colorScheme: 'dark' }}> */}
+      {/* <VisibilityProvider componentName="Player"> */}
         <Player />
-      </VisibilityProvider>
-   <VisibilityProvider componentName="Vehicle">
+     {/* </VisibilityProvider> */}
+  {/* <VisibilityProvider componentName="Vehicle"> */}
         <Vehicle />
-       </VisibilityProvider>
-    </MantineProvider>
+      {/* </VisibilityProvider> */}
+    {/* </MantineProvider> */}
   </React.StrictMode>
 )

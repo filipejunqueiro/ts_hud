@@ -1,255 +1,277 @@
 import React, { useState } from "react";
-import { Group, Text, DEFAULT_THEME, Box } from '@mantine/core';
+import { Text, DEFAULT_THEME, Box } from '@mantine/core';
 import { useNuiEvent } from "../hooks/useNuiEvent";
-import { PiSeatbeltFill, PiEngineFill } from "react-icons/pi"; // Import the seatbelt and engine icons
-import { FaGasPump } from "react-icons/fa6"; // Import the fuel icon
+import { PiEngineFill } from "react-icons/pi";
+import { FaFireFlameCurved, FaGasPump } from "react-icons/fa6";
 import useStyles from '../hooks/useStyles';
 import '../index.css';
 
 const Vehicle: React.FC = () => {
+  type VehInfo = {engineHealth?: number, fuel?: number, nitrous?: number};
+  
   const { classes } = useStyles();
   const theme = DEFAULT_THEME;
   const [speed, setSpeed] = useState<number>(0);
   const [gear, setGear] = useState<number>(0);
-  const [speedType, setSpeedType] = useState<string>('KMT');
-  const [seatbeltOn, setSeatbeltOn] = useState<boolean>(false);
+  const [speedType, setSpeedType] = useState<string>('KMH');
   const [streetName1, setStreetName1] = useState<string>('OSLO');
-  const [streetName2, setStreetName2] = useState<string>('FROGNER'); // Second street name
-  const [heading, setHeading] = useState<string>('N'); // Compass heading
-  const [fuel, setFuel] = useState<number>(40); // Fuel level
-  const [engineHealth, setEngineHealth] = useState<number>(0); // Engine health
-  const [nitrous, setNitrous] = useState<number>(50); // Nitrous level
-  const formattedSpeed = speed.toString().padStart(3, '0');
+  const [streetName2, setStreetName2] = useState<string>('FROGNER');
+  const [heading, setHeading] = useState<string>('N');
+  const [fuel, setFuel] = useState<number>(40);
+  const [engineHealth, setEngineHealth] = useState<number>(50);
+  const [nitrous, setNitrous] = useState<number>(50);
   const [isInVehicle, setIsInVehicle] = useState<boolean>(true);
-  const [isHarnessOn, setHarnessOn] = useState<boolean>(false);
 
   useNuiEvent<any>('vehicle', (data) => {
-    setSpeed(data.speed);
-    setGear(data.gear);
-    setSpeedType(data.speedType);
-    setSeatbeltOn(data.seatbeltOn);
-    setStreetName1(data.streetName1 || 'UNKNOWN'); // Default to UNKNOWN if not provided
-    setStreetName2(data.streetName2 || 'UNKNOWN'); // Default to UNKNOWN if not provided
-    setHeading(data.heading || 'N');
-    setFuel(data.fuel || 100);
-    setEngineHealth(data.engineHealth || 100);
-    setNitrous(data.nitrous || 0);
-    setIsInVehicle(data.isInVehicle);
-    setHarnessOn(data.isHarnessOn);
-});
+    setSpeed(data?.speed);
+    setGear(data?.gear);
+    setSpeedType(data?.speedType);
+    setStreetName1(data?.streetName1 || 'UNKNOWN');
+    setStreetName2(data?.streetName2 || 'UNKNOWN');
+    setHeading(data?.heading || 'N');
+    setFuel(data?.fuel || 100);
+    setEngineHealth(data?.engineHealth || 100);
+    setNitrous(data?.nitrous || 0);
+    setIsInVehicle(data?.isInVehicle);
+  });
 
-  const renderHorizontalFuelIndicator = (value: number) => {
-    return (
+  const renderVehInfoIndicators = (VehInfo: VehInfo) => {
+    if(VehInfo?.engineHealth === undefined || VehInfo?.fuel === undefined || VehInfo?.nitrous === undefined) return;
+    return(
       <Box
         sx={{
+          position: 'absolute',
+          top: -30,
+          left: 0,
           display: 'flex',
           alignItems: 'center',
           width: '100%',
-          margin: '4px 0',
         }}
       >
-        {/* Gear Box */}
+        {/* Engine */}
         <Box
-          sx={{
-            width: 40,
-            height: 20,
-            backgroundColor: theme.colors.dark[6],
-            border: `3px solid ${theme.colors.dark[7]}`,
-            borderRadius: theme.radius.sm,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: 4,
-          }}
-        >
-          <Text color="white" fw={700} size={14}>
-            {gear === 0 ? 'R' : gear}
-          </Text>
-        </Box>
-
-        {/* Fuel Icon Box */}
-        <Box
-          sx={{
-            width: 40,
-            height: 20,
-            backgroundColor: theme.colors.dark[6],
-            border: `3px solid ${theme.colors.dark[7]}`,
-            borderRadius: theme.radius.sm,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: 4,
-          }}
-        >
-          <FaGasPump
-            size={16}
-            style={{
-              color: '#f1f3f5',
-            }}
-          />
-        </Box>
-
-        {/* Fuel Bar */}
-        <Box 
           sx={{ 
             flexGrow: 1,
             height: 20,
             backgroundColor: theme.colors.dark[6], 
-            border: `3px solid ${theme.colors.dark[7]}`,
+            border: `2px solid ${theme.colors.dark[7]}`,
             borderRadius: theme.radius.sm,
             position: 'relative',
+            marginRight: 2,
           }}
         >
           <Box
             sx={{
-              width: `${value}%`,
+              width: `${VehInfo?.engineHealth}%`,
               height: '100%',
-              backgroundColor: value <= 20 ? 'red' : theme.colors.gray[4],
+              backgroundColor: theme.colors.yellow[3],
               borderRadius: theme.radius.sm,
-            }}
-          />
-        </Box>
-      </Box>
-    );
-  };
-
-  const renderHorizontalNitrousIndicator = (value: number) => {
-    if (value <= 0) return null;
-    
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          width: '100%',
-          margin: '1px 0',
-        }}
-      >
-        {/* Nitrous Bar */}
-        <Box 
-          sx={{ 
-            flexGrow: 1,
-            height: 5,
-            backgroundColor: theme.colors.dark[6], 
-            border: `3px solid ${theme.colors.dark[7]}`,
-            borderRadius: theme.radius.sm,
-            position: 'relative',
-          }}
-        >
-          <Box
-            sx={{
-              width: `${value}%`,
-              height: '100%',
-              backgroundColor: value <= 20 ? 'red' : theme.colors.violet[3],
-              borderRadius: theme.radius.sm,
-            }}
-          />
-        </Box>
-      </Box>
-    );
-  };
-
-  return (
-    <div className={classes.wrapperVehicle}>
-      <Group spacing={4} style={{ position: 'absolute', bottom: 60, left: 350, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-        
-        {/* Speed Display with SpeedType After */}
-        <Group spacing={4} align="left">
-          <Text color="white" size={80} fw={700} style={{ lineHeight: 1 }}>
-            {formattedSpeed}
-          </Text>
-          <Text color={theme.colors.gray[4]} fw={700} size={30} style={{ marginLeft: 4, marginTop: '1.5rem' }}>
-            {speedType.toUpperCase()}
-          </Text>
-        </Group>
-
-        {/* Gear and Fuel Indicator */}
-        {renderHorizontalFuelIndicator(fuel)}
-
-        {renderHorizontalNitrousIndicator(nitrous)}
-
-        {/* Street, Seatbelt, and Engine Health Display */}
-        <Group spacing={4} style={{ marginTop: 0, border: `3px solid ${theme.colors.dark[7]}`, backgroundColor: theme.colors.dark[6], padding: '4px 8px', borderRadius: theme.radius.sm }}>
-          {/* Heading Box */}
-          <Box
-            sx={{
-              width: 50,
-              height: 25,
-              backgroundColor: theme.colors.gray[4],
-              border: `3px solid ${theme.colors.gray[6]}`,
-              borderRadius: theme.radius.sm,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              position: 'relative',
             }}
           >
-            <Text color="gray" fw={700} size={14}>
-              {heading}
-            </Text>
-          </Box>
-
-          {/* Street Name */}
-          <Text
-            color="white"
-            fw={700}
-            size={13}
-            style={{ 
-              textTransform: 'uppercase',
-              maxWidth: '118px',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
-            }}
-          >
-            {streetName1} {streetName2 && `| ${streetName2}`}
-          </Text>
-
-          {/* Seatbelt and Harness Icons */}
-          <Box
-              sx={{
-                  width: 50,
-                  height: 25,
-                  backgroundColor: isHarnessOn ? theme.colors.blue[6] : (seatbeltOn ? theme.colors.green[6] : theme.colors.red[6]),
-                  border: `3px solid ${isHarnessOn ? theme.colors.blue[7] : (seatbeltOn ? theme.colors.green[7] : theme.colors.red[7])}`,
-                  borderRadius: theme.radius.sm,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginLeft: 8,
-              }}
-          >
-              {isHarnessOn ? (
-                  <PiSeatbeltFill  size={16} color="#f1f3f5" />
-              ) : (
-                  <PiSeatbeltFill size={16} color="#f1f3f5" />
-              )}
-          </Box>
-
-
-          {/* Engine Icon Box */}
-          {engineHealth <= 30 && (
             <Box
               sx={{
-                width: 50,
-                height: 25,
-                backgroundColor: theme.colors.red[6],
-                border: `3px solid ${theme.colors.red[7]}`,
-                borderRadius: theme.radius.sm,
+                position: 'absolute',
+                left: 4,
+                top: '50%',
+                transform: 'translateY(-50%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginLeft: 5,
               }}
             >
-              <PiEngineFill size={16} color="#f1f3f5" />
+              <PiEngineFill
+                size={14}
+                style={{
+                  color: VehInfo?.engineHealth <= 26 ? 'white' : theme.colors.dark[6],
+                }}
+              />
             </Box>
-          )}
-        </Group>
-      </Group>
+          </Box>
+        </Box>
+        {/* Fuel */}
+        <Box
+          sx={{ 
+            flexGrow: 1,
+            height: 20,
+            backgroundColor: theme.colors.dark[6], 
+            border: `2px solid ${theme.colors.dark[7]}`,
+            borderRadius: theme.radius.sm,
+            position: 'relative',
+            marginRight: 2,
+          }}
+        >
+          <Box
+            sx={{
+              width: `${VehInfo?.fuel}%`,
+              height: '100%',
+              backgroundColor: theme.colors.orange[3],
+              borderRadius: theme.radius.sm,
+              position: 'relative',
+            }}
+          >
+            <Box
+              sx={{
+                position: 'absolute',
+                left: 4,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <FaGasPump
+                size={14}
+                style={{
+                  color: VehInfo?.fuel <= 18 ? 'white' : theme.colors.dark[6],
+                }}
+              />
+            </Box>
+          </Box>
+        </Box>
+        {VehInfo?.nitrous >= 1 && (
+          <>
+            {/* Nitrous */}
+            <Box
+              sx={{ 
+                flexGrow: 1,
+                height: 20,
+                backgroundColor: theme.colors.dark[6], 
+                border: `2px solid ${theme.colors.dark[7]}`,
+                borderRadius: theme.radius.sm,
+                position: 'relative',
+                marginRight: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  width: `${VehInfo?.nitrous}%`,
+                  height: '100%',
+                  backgroundColor: theme.colors.violet[3],
+                  borderRadius: theme.radius.sm,
+                  position: 'relative',
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    left: 4,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <FaFireFlameCurved
+                    size={14}
+                    style={{
+                      color: VehInfo?.nitrous <= 15 ? 'white' : theme.colors.dark[6],
+                    }}
+                  />
+                </Box>
+              </Box>
+            </Box>
+          </>
+        )}
+      </Box>
+    );
+  };
 
+  const renderHeadingIndicators = (heading: string) => {
+    return (
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          display: 'flex',
+          alignItems: 'center',
+          padding: '2px 10px',
+        }}
+      >
+        <Text color={theme.colors.gray[4]} fw={700} size={17}>
+          {heading}
+        </Text>
+      </Box>
+    );
+  };
+
+  const renderStreetIndicators = (streetName1: string, streetName2: string) => {
+    return (
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          display: 'flex',
+          alignItems: 'center',
+          padding: '2px 10px',
+        }}
+      >
+        <Text color={theme.colors.gray[4]} fw={700} size={17}>
+          {streetName1} {streetName2 && `| ${streetName2}`}
+        </Text>
+      </Box>
+    );
+  };
+
+  const renderGearIndicators = (gear: number) => {
+    return (
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          width: 'auto',
+          height: 'auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '2px 10px',
+        }}
+      >
+        <Text color={theme.colors.gray[4]} fw={700} size={20}>
+          {gear === 0 ? 'R' : gear}
+        </Text>
+      </Box>
+    );
+  };
+  
+  const renderSpeedIndicators = (speed: number, speedType: string) => {
+    return (
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          display: 'flex',
+          alignItems: 'center',
+          padding: '2px 10px',
+        }}
+      >
+        <Text color={theme.colors.gray[4]} fw={700} size={20}>
+          {speed.toString().padStart(3, '0')}
+        </Text>
+        <Text color={theme.colors.gray[4]} fw={700} size={20} style={{ marginLeft: 4 }}>
+          {speedType.toUpperCase()}
+        </Text>
+      </Box>
+    );
+  };
+  
+  return (
+    <div className={classes.wrapperVehicle}>
       {isInVehicle && (
           <Box className={classes.minimapContainer}>
-              <Box className={classes.minimap}></Box>
+            <Box className={classes.minimap}>
+              {renderVehInfoIndicators({engineHealth: engineHealth, fuel:  fuel, nitrous: nitrous})}
+              {renderHeadingIndicators(heading)}
+              {renderStreetIndicators(streetName1, streetName2)}
+              {renderGearIndicators(gear)}
+              {renderSpeedIndicators(speed, speedType)}
+            </Box>
           </Box>
       )}
 

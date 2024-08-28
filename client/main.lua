@@ -1,7 +1,6 @@
--- Last Modified: 25/08/2024
-
 -- Global Constants and Configuration
 local Config = lib.load('config')
+local PlayerState = LocalPlayer.state
 local PlayerVoiceMethod, showingVehicleHUD, showingPlayerHUD, showingCompass = false, false, false, false
 local isSeatbeltOn, isHarnessOn, nitroActive, nos, stress = false, false, false, false, 0
 local speedMultiplier = Config.speedType == "MPH" and 2.23694 or 3.6
@@ -144,19 +143,19 @@ end
 
 -- Example on how to save when settings are updated
 RegisterNUICallback('updateHudType', function(data, cb)
-    hudType = data.hudType
+    hudType = data?.hudType
     saveHUDSettings() -- Save the updated HUD type
-    cb({ status = 'success', message = 'HUD type updated to ' .. data.hudType })
+    cb({ status = 'success', message = 'HUD type updated to ' .. data?.hudType })
 end)
 
 RegisterNUICallback('updateHudPosition', function(data, cb)
-    position = data.hudPosition
+    position = data?.hudPosition
     saveHUDSettings()
-    cb({ status = 'success', message = 'HUD position updated to ' .. data.hudPosition })
+    cb({ status = 'success', message = 'HUD position updated to ' .. data?.hudPosition })
 end)
 
 RegisterNUICallback('updateColors', function(data, cb)
-    currentColors = data.colors
+    currentColors = data?.colors
     saveHUDSettings()
     cb({ status = 'success', message = 'Colors updated' })
 end)
@@ -212,7 +211,7 @@ if GetResourceState('qbx_nitro') == 'started' then
         if plate ~= cachePlate then return end
         nitroActive = value
     end)
-    
+
     qbx.entityStateHandler('nitro', function(veh, netId, value)
         local plate = qbx.string.trim(GetVehicleNumberPlateText(veh))
         local cachePlate = qbx.string.trim(GetVehicleNumberPlateText(cache.vehicle))
@@ -250,7 +249,7 @@ CreateThread(function()
 end)
 
 RegisterNUICallback('toggleCinematicBars', function(data, cb)
-    camActive = data.enabled
+    camActive = data?.enabled
     CreateThread(handleCinematicAnim)
 
     -- Hide the HUD elements when cinematic bars are enabled
@@ -265,7 +264,7 @@ RegisterNUICallback('toggleCinematicBars', function(data, cb)
     hideSettingsMenu()
 
     -- Notify the NUI that the operation was successful
-    cb({ status = 'success', message = 'Cinematic bars ' .. (data.enabled and 'disabled') })
+    cb({ status = 'success', message = 'Cinematic bars ' .. (data?.enabled and 'disabled') })
 end)
 
 RegisterNUICallback('getCinematicBarsState', function(_, cb)
@@ -314,14 +313,14 @@ AddEventHandler("pma-voice:radioActive", function(radioTalking)
 end)
 
 RegisterNUICallback('updateHudType', function(data, cb)
-    cb({ status = 'success', message = 'HUD type updated to ' .. data.hudType })
+    cb({ status = 'success', message = 'HUD type updated to ' .. data?.hudType })
 end)
 
 -- Stress Management
 if Config.stress.enableStress then
     CreateThread(function()
         while true do
-            if LocalPlayer.state.isLoggedIn and cache.vehicle then
+            if PlayerState.isLoggedIn and cache.vehicle then
                 local vehClass = GetVehicleClass(cache.vehicle)
                 local speed = GetEntitySpeed(cache.vehicle) * speedMultiplier
 
@@ -350,7 +349,7 @@ CreateThread(function()
 
             if not IsPedRagdoll(cache.ped) and IsPedOnFoot(cache.ped) and not IsPedSwimming(cache.ped) then
                 local forwardVector = GetEntityForwardVector(cache.ped)
-                SetPedToRagdollWithFall(cache.ped, ragdollTimeout, ragdollTimeout, 1, forwardVector.x, forwardVector.y, forwardVector.z, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+                SetPedToRagdollWithFall(cache.ped, ragdollTimeout, ragdollTimeout, 1, forwardVector.x, forwardVector.y, forwardVector.z, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
             end
 
             Wait(1000)
@@ -376,7 +375,7 @@ end)
 -- Fuel and Seatbelt Threads
 CreateThread(function()
     while true do
-        if LocalPlayer.state.isLoggedIn and cache.vehicle and not IsThisModelABicycle(GetEntityModel(cache.vehicle)) then
+        if PlayerState.isLoggedIn and cache.vehicle and not IsThisModelABicycle(GetEntityModel(cache.vehicle)) then
             if getFuelLevel(cache.vehicle) <= 20 and Config.isLowFuelChecked then
                 lib.notify({
                     description = 'Vehicle is low on fuel!',
@@ -412,7 +411,7 @@ CreateThread(function()
     end
 
     while true do
-        if not IsPauseMenuActive() and LocalPlayer.state.isLoggedIn then
+        if not IsPauseMenuActive() and PlayerState.isLoggedIn then
             local stamina = 100 - GetPlayerSprintStaminaRemaining(cache.playerId)
             local PlayerData = Config.core.Functions.GetPlayerData()
 
@@ -431,14 +430,16 @@ CreateThread(function()
                 health = math.ceil(GetEntityHealth(cache.ped) - 100),
                 stress = stress,
                 armor = math.ceil(GetPedArmour(cache.ped)),
-                thirst = math.ceil(PlayerData.metadata.thirst),
-                hunger = math.ceil(PlayerData.metadata.hunger),
+                thirst = math.ceil(Playerdata?.metadata?.thirst),
+                hunger = math.ceil(Playerdata?.metadata?.hunger),
                 oxygen = stamina or 0,
-                voice = LocalPlayer.state.proximity.distance,
+                voice = PlayerState.proximity.distance,
                 talking = getPlayerVoiceMethod(cache.playerId),
                 colors = currentColors,
                 hudType = hudType,  -- Include HUD type
-                hudPosition = position  -- Include HUD position
+                hudPosition = position,  -- Include HUD position
+                seatbelt = PlayerState.seatbelt,
+                harness = PlayerState.harness,
             })
 
             if cache.vehicle and GetIsVehicleEngineRunning(cache.vehicle) then
@@ -457,7 +458,7 @@ CreateThread(function()
                     streetName1 = getCrossroads(cache.vehicle)[1],
                     streetName2 = getCrossroads(cache.vehicle)[2],
                     heading = getHeadingText(GetEntityHeading(cache.vehicle)),
-                    engine = math.ceil(GetVehicleEngineHealth(cache.vehicle) / 10),
+                    engineHealth = math.ceil(GetVehicleEngineHealth(cache.vehicle) / 10),
                     fuel = math.ceil(GetVehicleFuelLevel(cache.vehicle)),
                     nitrous = nos,
                     isInVehicle = true,

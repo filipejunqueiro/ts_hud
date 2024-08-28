@@ -2,12 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Group, ThemeIcon, Box, Center, RingProgress, DEFAULT_THEME } from '@mantine/core';
 import { TbLungsFilled } from 'react-icons/tb';
 import { FaHeart, FaWalkieTalkie, FaSkull, FaMicrophone, FaShield, FaBrain } from "react-icons/fa6";
+import { PiBeltFill } from "react-icons/pi";
+import { GiBeltBuckles } from "react-icons/gi";
 import { FaMicrophoneSlash } from 'react-icons/fa';
 import { MdLocalDrink, MdRestaurant } from "react-icons/md";
 import HUDSettings from './HUDSettings';
 import useStyles from '../hooks/useStyles';
 import { useNuiEvent } from "../hooks/useNuiEvent";
 import { fetchNui } from "../utils/fetchNui";
+import { PiSeatbelt } from "react-icons/pi";
 
 const Player: React.FC = () => {
     const { classes } = useStyles();
@@ -20,6 +23,8 @@ const Player: React.FC = () => {
     const [stress, setStress] = useState<number>(50);
     const [talking, setTalking] = useState<any>(false);
     const [voice, setVoice] = useState<number>(0);
+    const [seatbelt, setSeatbelt] = useState<number>(1);
+    const [harness, setHarness] = useState<number>(0);
     const [colors, setColors] = useState<any>({
         voiceInactive: '#6c757d',
         voiceActive: '#ffd43b',
@@ -30,24 +35,28 @@ const Player: React.FC = () => {
         hunger: '#fcc419',
         thirst: '#22b8cf',
         stress: '#ff6b6b',
+        seatbelt: '#FFA500',
+        harness: '#FFA500',
     });
     const [position, setPosition] = useState<string>('left');
-    const [hudType, setHudType] = useState<string>('rectangle');
+    const [hudType, setHudType] = useState<string>('circle');
     const [vehicleType, setVehicleType] = useState<string>('default');
     const [opened, setOpened] = useState(false);
 
     useNuiEvent<any>('player', (data) => {
-        setColors(data.colors);
-        setHealth(data.health);
-        setArmor(data.armor);
-        setThirst(data.thirst);
-        setHunger(data.hunger);
-        setOxygen(data.oxygen);
-        setStress(data.stress);
-        setTalking(data.talking);
-        setVoice(data.voice);
-        setHudType(data.hudType);
-        setPosition(data.hudPosition);
+        setColors(data?.colors);
+        setHealth(data?.health);
+        setArmor(data?.armor);
+        setThirst(data?.thirst);
+        setHunger(data?.hunger);
+        setOxygen(data?.oxygen);
+        setStress(data?.stress);
+        setTalking(data?.talking);
+        setVoice(data?.voice);
+        setHudType(data?.hudType);
+        setPosition(data?.hudPosition);
+        setHarness(data?.harness);
+        setSeatbelt(data?.seatbelt);
     });
 
     useNuiEvent('HUDSettings', (data: boolean) => {
@@ -55,11 +64,11 @@ const Player: React.FC = () => {
     });
 
     useNuiEvent<any>('player', (data) => {
-        if (data.hudType) {
-            setHudType(data.hudType);
+        if (data?.hudType) {
+            setHudType(data?.hudType);
         }
-        if (data.hudPosition) {
-            setPosition(data.hudPosition);
+        if (data?.hudPosition) {
+            setPosition(data?.hudPosition);
         }
     });
 
@@ -165,6 +174,16 @@ const Player: React.FC = () => {
                 {hudType === 'rectangle' && renderRectangleProgress(health, health <= 0 ? 'red' : colors.health, health > 0 ? <FaHeart size={20} /> : <FaSkull size={20} />)}
                 {hudType === 'circle' && renderCircleProgress(health, health <= 0 ? 'red' : colors.health, health > 0 ? <FaHeart size={18} /> : <FaSkull size={18} />)}
 
+                {harness === 1 && (<>
+                    {hudType === 'rectangle' && renderRectangleProgress(harness === 1 ? 100 : 0, colors.harness, <GiBeltBuckles size={20} />)}
+                    {hudType === 'circle' && renderCircleProgress(harness === 1 ? 100 : 0, colors.harness, <GiBeltBuckles size={18} />)}
+                </>)}
+
+                {harness === 0 && (<>
+                    {hudType === 'rectangle' && renderRectangleProgress(seatbelt === 1 ? 100 : 0, colors.seatbelt, <PiBeltFill size={20} />)}
+                    {hudType === 'circle' && renderCircleProgress(seatbelt === 1 ? 100 : 0, colors.seatbelt, <PiBeltFill size={18} />)}
+                </>)}
+     
                 {armor > 0 && hudType === 'rectangle' && renderRectangleProgress(armor, colors.armor, <FaShield size={20} />)}
                 {armor > 0 && hudType === 'circle' && renderCircleProgress(armor, colors.armor, <FaShield size={18} />)}
 
@@ -179,6 +198,7 @@ const Player: React.FC = () => {
 
                 {stress > 0 && hudType === 'rectangle' && renderRectangleProgress(stress, colors.stress, <FaBrain size={20} />)}
                 {stress > 0 && hudType === 'circle' && renderCircleProgress(stress, colors.stress, <FaBrain size={18} />)}
+
             </Group>
 
             <HUDSettings 
