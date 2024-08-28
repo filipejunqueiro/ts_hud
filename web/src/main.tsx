@@ -17,13 +17,13 @@ if (isEnvBrowser()) {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    {/* <MantineProvider theme={{ colorScheme: 'dark' }}> */}
-      {/* <VisibilityProvider componentName="Player"> */}
+    <MantineProvider theme={{ colorScheme: 'dark' }}>
+      <VisibilityProvider componentName="Player">
         <Player />
-     {/* </VisibilityProvider> */}
-  {/* <VisibilityProvider componentName="Vehicle"> */}
+     </VisibilityProvider>
+  <VisibilityProvider componentName="Vehicle">
         <Vehicle />
-      {/* </VisibilityProvider> */}
-    {/* </MantineProvider> */}
+      </VisibilityProvider>
+    </MantineProvider>
   </React.StrictMode>
 )
