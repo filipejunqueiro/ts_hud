@@ -173,16 +173,6 @@ const Player: React.FC = () => {
 
                 {hudType === 'rectangle' && renderRectangleProgress(health, health <= 0 ? 'red' : colors.health, health > 0 ? <FaHeart size={20} /> : <FaSkull size={20} />)}
                 {hudType === 'circle' && renderCircleProgress(health, health <= 0 ? 'red' : colors.health, health > 0 ? <FaHeart size={18} /> : <FaSkull size={18} />)}
-
-                {harness === 1 && (<>
-                    {hudType === 'rectangle' && renderRectangleProgress(harness === 1 ? 100 : 0, colors.harness, <GiBeltBuckles size={20} />)}
-                    {hudType === 'circle' && renderCircleProgress(harness === 1 ? 100 : 0, colors.harness, <GiBeltBuckles size={18} />)}
-                </>)}
-
-                {harness === 0 && (<>
-                    {hudType === 'rectangle' && renderRectangleProgress(seatbelt === 1 ? 100 : 0, colors.seatbelt, <PiBeltFill size={20} />)}
-                    {hudType === 'circle' && renderCircleProgress(seatbelt === 1 ? 100 : 0, colors.seatbelt, <PiBeltFill size={18} />)}
-                </>)}
      
                 {armor > 0 && hudType === 'rectangle' && renderRectangleProgress(armor, colors.armor, <FaShield size={20} />)}
                 {armor > 0 && hudType === 'circle' && renderCircleProgress(armor, colors.armor, <FaShield size={18} />)}
@@ -199,6 +189,15 @@ const Player: React.FC = () => {
                 {stress > 0 && hudType === 'rectangle' && renderRectangleProgress(stress, colors.stress, <FaBrain size={20} />)}
                 {stress > 0 && hudType === 'circle' && renderCircleProgress(stress, colors.stress, <FaBrain size={18} />)}
 
+                {harness === 1 && (<>
+                    {hudType === 'rectangle' && renderRectangleProgress(harness === 1 ? 100 : 0, colors.harness, <GiBeltBuckles size={20} />)}
+                    {hudType === 'circle' && renderCircleProgress(harness === 1 ? 100 : 0, colors.harness, <GiBeltBuckles size={18} />)}
+                </>)}
+
+                {harness === 0 && (<>
+                    {hudType === 'rectangle' && renderRectangleProgress(seatbelt === 1 ? 100 : 0, colors.seatbelt, <PiBeltFill size={20} />)}
+                    {hudType === 'circle' && renderCircleProgress(seatbelt === 1 ? 100 : 0, colors.seatbelt, <PiBeltFill size={18} />)}
+                </>)}
             </Group>
 
             <HUDSettings 
