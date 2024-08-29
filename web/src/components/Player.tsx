@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Group, ThemeIcon, Box, Center, RingProgress, DEFAULT_THEME } from '@mantine/core';
 import { TbLungsFilled } from 'react-icons/tb';
 import { FaHeart, FaWalkieTalkie, FaSkull, FaMicrophone, FaShield, FaBrain } from "react-icons/fa6";
@@ -9,8 +9,6 @@ import { MdLocalDrink, MdRestaurant } from "react-icons/md";
 import HUDSettings from './HUDSettings';
 import useStyles from '../hooks/useStyles';
 import { useNuiEvent } from "../hooks/useNuiEvent";
-import { fetchNui } from "../utils/fetchNui";
-import { PiSeatbelt } from "react-icons/pi";
 
 const Player: React.FC = () => {
     const { classes } = useStyles();
@@ -24,7 +22,7 @@ const Player: React.FC = () => {
     const [talking, setTalking] = useState<any>(false);
     const [voice, setVoice] = useState<number>(0);
     const [seatbelt, setSeatbelt] = useState<number>(1);
-    const [harness, setHarness] = useState<number>(0);
+    const [harness, setHarness] = useState<number>(1);
     const [colors, setColors] = useState<any>({
         voiceInactive: '#6c757d',
         voiceActive: '#ffd43b',
@@ -189,15 +187,11 @@ const Player: React.FC = () => {
                 {stress > 0 && hudType === 'rectangle' && renderRectangleProgress(stress, colors.stress, <FaBrain size={20} />)}
                 {stress > 0 && hudType === 'circle' && renderCircleProgress(stress, colors.stress, <FaBrain size={18} />)}
 
-                {harness === 1 && (<>
-                    {hudType === 'rectangle' && renderRectangleProgress(harness === 1 ? 100 : 0, colors.harness, <GiBeltBuckles size={20} />)}
-                    {hudType === 'circle' && renderCircleProgress(harness === 1 ? 100 : 0, colors.harness, <GiBeltBuckles size={18} />)}
-                </>)}
+                {harness === 1 && hudType === 'rectangle' && renderRectangleProgress(harness === 1 ? 100 : 0, colors.harness, <GiBeltBuckles size={20} />)}
+                {harness === 1 && hudType === 'circle' && renderCircleProgress(harness === 1 ? 100 : 0, colors.harness, <GiBeltBuckles size={20} />)}
 
-                {harness === 0 && (<>
-                    {hudType === 'rectangle' && renderRectangleProgress(seatbelt === 1 ? 100 : 0, colors.seatbelt, <PiBeltFill size={20} />)}
-                    {hudType === 'circle' && renderCircleProgress(seatbelt === 1 ? 100 : 0, colors.seatbelt, <PiBeltFill size={18} />)}
-                </>)}
+                {harness === 0 && hudType === 'rectangle' && renderRectangleProgress(seatbelt === 1 ? 100 : 0, colors.harness, <PiBeltFill size={20} />)}
+                {harness === 0 && hudType === 'circle' && renderCircleProgress(seatbelt === 1 ? 100 : 0, colors.harness, <PiBeltFill size={20} />)}
             </Group>
 
             <HUDSettings 

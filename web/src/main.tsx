@@ -20,8 +20,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <MantineProvider theme={{ colorScheme: 'dark' }}>
       <VisibilityProvider componentName="Player">
         <Player />
-     </VisibilityProvider>
-  <VisibilityProvider componentName="Vehicle">
+      </VisibilityProvider>
+      <VisibilityProvider componentName="Vehicle">
         <Vehicle />
       </VisibilityProvider>
     </MantineProvider>
